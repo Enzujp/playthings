@@ -1,29 +1,42 @@
 # from optparse import IndentedHelpFormatter
 from django.shortcuts import render, redirect, get_object_or_404    
 from django.urls import reverse
+from django.views import generic
 from django.http import HttpResponse, HttpRequest, Http404, HttpResponseRedirect
 
 from polls.models import Question, Choice
 
 # Create your views here.
 
-def index(request):
-    latest_question_list = Question.objects.all()
-    render(request, 'polls/index.html', {
-        'latest_question_list': latest_question_list
-    })
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question_list'
 
-def detail(request, question_id):
-    question: get_object_or_404(Question, pk=question_id)   
-    return render (request, 'polls/detail.html', {
-        'question': question
-    })
+    def get_queryset(self):
+        """Retun the last five published questions."""
+        return Question.objects.order_by('-pub_date')[:5]
 
-def results(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/results.html', {
-        'question': question  
-    })
+# def index(request):
+#     latest_question_list = Question.objects.all()
+#     render(request, 'polls/index.html', {
+#         'latest_question_list': latest_question_list
+#     })
+
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = 'polls/detail.html'
+    # question: get_object_or_404(Question, pk=question_id)   
+    # return render (request, 'polls/detail.html', {
+    #     'question': question
+    # })
+
+class ResultsView(generic.DetailView):
+    model = Question
+    template_name = 'polls/detail.html'
+    # question = get_object_or_404(Question, pk=question_id)
+    # return render(request, 'polls/results.html', {
+    #     'question': question  
+    # })
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
