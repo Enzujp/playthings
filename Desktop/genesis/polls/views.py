@@ -50,6 +50,6 @@ def vote(request, question_id):
     else:
         selected_choice.votes += 1
         selected_choice.save()
-    # Always return a httpResponseRedirect after succesfully dealing with posy
+    # Always return a httpResponseRedirect after succesfully dealing with post
     # To avoid data being posted twice/ being replicated
     return HttpResponseRedirect(reverse('polls:results', args=question_id))
